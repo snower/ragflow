@@ -402,6 +402,7 @@ General：实体和关系提取提示来自 GitHub - microsoft/graphrag：基于
       mind: '思维导图',
       question: '问题',
       questionTip: `如果有给定的问题，则块的嵌入将基于它们。`,
+      searchKnowledgeSetting: '知识库设置',
     },
     chat: {
       newConversation: '新会话',

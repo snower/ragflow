@@ -40,6 +40,12 @@ const routes = [
     layout: false,
   },
   {
+    path: '/embed-search',
+    component: '@/pages/embed-search',
+    layout: false,
+    wrappers: ['@/wrappers/auth'],
+  },
+  {
     path: '/',
     component: '@/layouts',
     layout: false,
