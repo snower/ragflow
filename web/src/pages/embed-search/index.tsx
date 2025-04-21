@@ -4,7 +4,6 @@ import { ImageWithPopover } from '@/components/image';
 import PdfDrawer from '@/components/pdf-drawer';
 import { useClickDrawer } from '@/components/pdf-drawer/hooks';
 import RetrievalDocuments from '@/components/retrieval-documents';
-import SvgIcon from '@/components/svg-icon';
 import {
   useFetchKnowledgeList,
   useSelectTestingResult,
@@ -19,7 +18,6 @@ import {
   Input,
   Layout,
   List,
-  Modal,
   Pagination,
   PaginationProps,
   Popover,
@@ -27,17 +25,16 @@ import {
   Space,
   Spin,
   Tag,
-  Tooltip,
 } from 'antd';
 import DOMPurify from 'dompurify';
 import { isEmpty } from 'lodash';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import MarkdownContent from '../chat/markdown-content';
 import { useSendQuestion, useShowMindMapDrawer } from './hooks';
 import styles from './index.less';
+import MarkdownContent from './markdown-content/index';
 import MindMapDrawer from './mindmap-drawer';
-import SearchSidebar from './sidebar';
+import SidebarModal from './sidebar-modal';
 
 const { Content } = Layout;
 const { Search } = Input;
@@ -100,12 +97,12 @@ const SearchPage = () => {
   const [
     isSearchKnowledgeSettingModalOpen,
     setIsSearchKnowledgeSettingModalOpen,
-  ] = useState(true);
+  ] = useState(false);
 
   return (
     <>
       <Layout className={styles.searchPage}>
-        <Modal
+        {/* <Modal
           title={t('chunk.searchKnowledgeSetting')}
           open={isSearchKnowledgeSettingModalOpen}
           footer={null}
@@ -117,7 +114,17 @@ const SearchPage = () => {
             checkedList={checkedWithoutEmbeddingIdList}
             setCheckedList={setCheckedList}
           ></SearchSidebar>
-        </Modal>
+        </Modal> */}
+        <SidebarModal
+          title={t('chunk.searchKnowledgeSetting')}
+          open={isSearchKnowledgeSettingModalOpen}
+          footer={null}
+          onOk={() => setIsSearchKnowledgeSettingModalOpen(false)}
+          onCancel={() => setIsSearchKnowledgeSettingModalOpen(false)}
+          isFirstRender={isFirstRender}
+          checkedList={checkedWithoutEmbeddingIdList}
+          setCheckedList={setCheckedList}
+        />
         <FloatButton
           onClick={() => setIsSearchKnowledgeSettingModalOpen(true)}
         />
@@ -244,19 +251,7 @@ const SearchPage = () => {
           </Content>
         </Layout>
       </Layout>
-      {!isFirstRender &&
-        !isSearchStrEmpty &&
-        !isEmpty(checkedWithoutEmbeddingIdList) && (
-          <Tooltip title={t('chunk.mind')} zIndex={1}>
-            <FloatButton
-              className={styles.mindMapFloatButton}
-              onClick={showMindMapModal}
-              icon={
-                <SvgIcon name="paper-clip" width={24} height={30}></SvgIcon>
-              }
-            />
-          </Tooltip>
-        )}
+
       {visible && (
         <PdfDrawer
           visible={visible}

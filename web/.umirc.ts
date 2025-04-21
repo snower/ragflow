@@ -38,10 +38,11 @@ export default defineConfig({
   proxy: [
     {
       context: ['/api', '/v1'],
-      target: 'http://127.0.0.1:9380/',
+      target: 'https://ragflow.aecg.com.cn/',
       changeOrigin: true,
       ws: true,
       logger: console,
+      // followRedirects: false,
       // pathRewrite: { '^/v1': '/v1' },
     },
   ],

@@ -1,9 +1,8 @@
-import Image from '@/components/image';
+// import Image from '@/components/image';
 import SvgIcon from '@/components/svg-icon';
 import { IReference, IReferenceChunk } from '@/interfaces/database/chat';
 import { getExtension } from '@/utils/document-util';
-import { InfoCircleOutlined } from '@ant-design/icons';
-import { Button, Flex, Modal, Popover, Space } from 'antd';
+import { Button, Flex, Image, Space } from 'antd';
 import DOMPurify from 'dompurify';
 import { useCallback, useEffect, useMemo } from 'react';
 import Markdown from 'react-markdown';
@@ -21,9 +20,11 @@ import { useTranslation } from 'react-i18next';
 import 'katex/dist/katex.min.css'; // `rehype-katex` does not import the CSS for you
 
 import { preprocessLaTeX, replaceThinkToSection } from '@/utils/chat';
-import { replaceTextByOldReg } from '../utils';
+import { replaceTextByOldReg } from '../../chat/utils';
 
+import { api_host } from '@/utils/api';
 import { pipe } from 'lodash/fp';
+import TipModal from './TipModal';
 import styles from './index.less';
 
 const reg = /(~{2}\d+={2})/g;
@@ -108,28 +109,42 @@ const MarkdownContent = ({
       const fileExtension = documentId ? getExtension(document?.doc_name) : '';
       const imageId = chunkItem?.image_id;
       return (
-        <Flex
+        <div
           key={chunkItem?.id}
-          gap={10}
-          className={styles.referencePopoverWrapper}
+          style={{
+            position: 'relative',
+          }}
+          // gap={10}
+          // className={styles.referencePopoverWrapper}
         >
           {imageId && (
-            <Popover
-              placement="left"
-              content={
-                <Image
-                  id={imageId}
-                  className={styles.referenceImagePreview}
-                ></Image>
-              }
-            >
-              <Image
-                id={imageId}
-                className={styles.referenceChunkImage}
-              ></Image>
-            </Popover>
+            // <Popover
+            //   placement="left"
+            //   content={
+            //     <Image
+            //       id={imageId}
+            //       className={styles.referenceImagePreview}
+            //     ></Image>
+            //   }
+            // >
+
+            // </Popover>
+
+            <Image
+              id={imageId}
+              style={{
+                width: '30%',
+              }}
+              className={styles.referenceChunkImage}
+              src={`${api_host}/document/image/${imageId}`}
+            ></Image>
           )}
-          <Space direction={'vertical'}>
+          <Space
+            direction={'vertical'}
+            style={{
+              width: '100%',
+            }}
+          >
             <div
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(chunkItem?.content ?? ''),
@@ -165,7 +180,7 @@ const MarkdownContent = ({
               </Flex>
             )}
           </Space>
-        </Flex>
+        </div>
       );
     },
     [reference, fileThumbnails, handleDocumentButtonClick],
@@ -177,13 +192,12 @@ const MarkdownContent = ({
         const chunkIndex = getChunkIndex(match);
         return (
           <>
-            <InfoCircleOutlined className={styles.referenceIcon} />
-            <Modal>
+            <TipModal>
               {/* <Popover content={getPopoverContent(chunkIndex)} key={i}> */}
 
               {/* </Popover> */}
               {getPopoverContent(chunkIndex)}
-            </Modal>
+            </TipModal>
           </>
         );
       });

@@ -1,32 +1,34 @@
 import { useFetchKnowledgeList } from '@/hooks/knowledge-hooks';
 import { UserOutlined } from '@ant-design/icons';
 import type { TreeDataNode, TreeProps } from 'antd';
-import { Avatar, Layout, Space, Spin, Tree, Typography } from 'antd';
-import classNames from 'classnames';
 import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+  Avatar,
+  Layout,
+  Modal,
+  ModalProps,
+  Space,
+  Spin,
+  Tree,
+  Typography,
+} from 'antd';
+import classNames from 'classnames';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import styles from './index.less';
 
 const { Sider } = Layout;
 
-interface IProps {
+type Props = ModalProps & {
   isFirstRender: boolean;
   checkedList: string[];
-  setCheckedList: Dispatch<SetStateAction<string[]>>;
-}
-
-const SearchSidebar = ({
+  setCheckedList: React.Dispatch<React.SetStateAction<string[]>>;
+};
+const SidebarModal: React.FC<Props> = ({
   isFirstRender,
   checkedList,
   setCheckedList,
-}: IProps) => {
+  ...props
+}) => {
   const { list, loading } = useFetchKnowledgeList();
 
   const groupedList = useMemo(() => {
@@ -133,30 +135,32 @@ const SearchSidebar = ({
   }, [groupedList, setExpandedKeys, setCheckedList]);
 
   return (
-    <Sider
-      className={classNames(styles.searchSide, {
-        [styles.transparentSearchSide]: isFirstRender,
-      })}
-      theme={'light'}
-      width={'20%'}
-    >
-      <Spin spinning={loading}>
-        <Tree
-          className={styles.list}
-          checkable
-          onExpand={onExpand}
-          expandedKeys={expandedKeys}
-          autoExpandParent={autoExpandParent}
-          onCheck={onCheck}
-          checkedKeys={checkedList}
-          onSelect={onSelect}
-          selectedKeys={selectedKeys}
-          treeData={groupedList}
-          titleRender={renderTitle}
-        />
-      </Spin>
-    </Sider>
+    <Modal footer={null} {...props}>
+      <Sider
+        className={classNames(styles.searchSide, {
+          [styles.transparentSearchSide]: isFirstRender,
+        })}
+        theme={'light'}
+        width={'20%'}
+      >
+        <Spin spinning={loading}>
+          <Tree
+            className={styles.list}
+            checkable
+            onExpand={onExpand}
+            expandedKeys={expandedKeys}
+            autoExpandParent={autoExpandParent}
+            onCheck={onCheck}
+            checkedKeys={checkedList}
+            onSelect={onSelect}
+            selectedKeys={selectedKeys}
+            treeData={groupedList}
+            titleRender={renderTitle}
+          />
+        </Spin>
+      </Sider>
+    </Modal>
   );
 };
 
-export default SearchSidebar;
+export default SidebarModal;
