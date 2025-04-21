@@ -34,6 +34,7 @@ const TipModal: React.FC<PropsWithChildren<Props>> = ({
           setOpen(false);
           props?.onCancel?.(e);
         }}
+        footer={null}
       >
         {children}
       </Modal>
