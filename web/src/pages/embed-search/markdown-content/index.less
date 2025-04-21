@@ -16,6 +16,12 @@
   // max-width: 50vw;
 }
 
+div:has(> img.referenceChunkImage) {
+  max-height: 17vh;
+  overflow: hidden;
+  margin-top: 25px;
+}
+
 .referenceChunkImage {
   width: 100%;
   object-fit: contain;
@@ -33,6 +39,7 @@
 .documentLink {
   padding: 0;
   white-space: wrap;
+  height: auto;
 }
 
 .referenceIcon {

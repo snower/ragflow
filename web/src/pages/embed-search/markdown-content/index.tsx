@@ -132,9 +132,6 @@ const MarkdownContent = ({
 
             <Image
               id={imageId}
-              style={{
-                width: '30%',
-              }}
               className={styles.referenceChunkImage}
               src={`${api_host}/document/image/${imageId}`}
             ></Image>

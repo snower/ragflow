@@ -62,6 +62,9 @@
 
 .firstRenderContent {
   height: 100%;
+  overflow: auto;
+  width: 100%;
+  padding: 20px 2% 10px;
 
   > div {
     width: 100%;
@@ -97,6 +100,14 @@
   .pagination {
     padding-bottom: 16px;
   }
+
+  :global(colgroup col:nth-child(3)) {
+    width: 50px !important;
+  }
+
+  :global(colgroup col:nth-child(4)) {
+    width: 0px !important;
+  }
 }
 .answerWrapper {
   margin-top: 16px;
@@ -131,7 +142,7 @@
 
 .globalInput {
   max-width: 600px;
-  width: 80%;
+  width: 100%;
   position: sticky;
   top: 30%;
   z-index: 1;

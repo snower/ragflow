@@ -23,9 +23,11 @@ const TipModal: React.FC<PropsWithChildren<Props>> = ({
         {...props}
         styles={{
           body: {
-            height: '75vh',
+            overflow: 'hidden',
           },
         }}
+        width="960px"
+        className="tipModal"
         onOk={(e) => {
           setOpen(false);
           props?.onOk?.(e);
