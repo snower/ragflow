@@ -9,8 +9,10 @@ import {
   useUploadNextDocument,
 } from '@/hooks/document-hooks';
 import { useGetKnowledgeSearchParams } from '@/hooks/route-hook';
+import { IDocumentInfo } from '@/interfaces/database/document';
 import { IChangeParserConfigRequestBody } from '@/interfaces/request/document';
 import { UploadFile } from 'antd';
+import { TableRowSelection } from 'antd/es/table/interface';
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'umi';
 import { KnowledgeRouteKey } from './constant';
@@ -126,7 +128,7 @@ export const useChangeDocumentParser = (documentId: string) => {
 export const useGetRowSelection = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
-  const rowSelection = {
+  const rowSelection: TableRowSelection<IDocumentInfo> = {
     selectedRowKeys,
     onChange: (newSelectedRowKeys: React.Key[]) => {
       setSelectedRowKeys(newSelectedRowKeys);
@@ -148,7 +150,13 @@ export const useHandleUploadDocument = () => {
   const { runDocumentByIds, loading: _ } = useRunNextDocument();
 
   const onDocumentUploadOk = useCallback(
-    async (parseOnCreation: boolean): Promise<number | undefined> => {
+    async ({
+      parseOnCreation,
+      directoryFileList,
+    }: {
+      directoryFileList: UploadFile[];
+      parseOnCreation: boolean;
+    }): Promise<number | undefined> => {
       const processFileGroup = async (filesPart: UploadFile[]) => {
         // set status to uploading on files
         setFileList(
@@ -192,8 +200,17 @@ export const useHandleUploadDocument = () => {
           totalSuccess: succesfulFilenames.length,
         };
       };
-
       const totalFiles = fileList.length;
+
+      if (directoryFileList.length > 0) {
+        const ret = await uploadDocument(directoryFileList);
+        if (ret?.code === 0) {
+          hideDocumentUploadModal();
+        }
+        if (totalFiles === 0) {
+          return 0;
+        }
+      }
 
       if (totalFiles === 0) {
         console.log('No files to upload');

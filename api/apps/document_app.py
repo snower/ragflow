@@ -331,10 +331,10 @@ def rm():
                     message="Database error (Document removal)!")
 
             f2d = File2DocumentService.get_by_document_id(doc_id)
-            FileService.filter_delete([File.source_type == FileSource.KNOWLEDGEBASE, File.id == f2d[0].file_id])
+            deleted_file_count = FileService.filter_delete([File.source_type == FileSource.KNOWLEDGEBASE, File.id == f2d[0].file_id])
             File2DocumentService.delete_by_document_id(doc_id)
-
-            STORAGE_IMPL.rm(b, n)
+            if deleted_file_count > 0:
+                STORAGE_IMPL.rm(b, n)
         except Exception as e:
             errors += str(e)
 
@@ -380,7 +380,7 @@ def run():
                 doc = doc.to_dict()
                 doc["tenant_id"] = tenant_id
                 bucket, name = File2DocumentService.get_storage_address(doc_id=doc["id"])
-                queue_tasks(doc, bucket, name)
+                queue_tasks(doc, bucket, name, 0)
 
         return get_json_result(data=True)
     except Exception as e:

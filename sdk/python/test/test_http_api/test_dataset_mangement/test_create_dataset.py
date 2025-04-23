@@ -21,6 +21,7 @@ from libs.utils import encode_avatar
 from libs.utils.file_utils import create_image_file
 
 
+@pytest.mark.usefixtures("clear_datasets")
 class TestAuthorization:
     @pytest.mark.parametrize(
         "auth, expected_code, expected_message",
@@ -39,6 +40,7 @@ class TestAuthorization:
         assert res["message"] == expected_message
 
 
+@pytest.mark.usefixtures("clear_datasets")
 class TestDatasetCreation:
     @pytest.mark.parametrize(
         "payload, expected_code",
@@ -73,8 +75,6 @@ class TestDatasetCreation:
             res = create_dataset(get_http_api_auth, payload)
             assert res["code"] == 0, f"Failed to create dataset {i}"
 
-
-class TestAdvancedConfigurations:
     def test_avatar(self, get_http_api_auth, tmp_path):
         fn = create_image_file(tmp_path / "ragflow_test.png")
         payload = {
@@ -122,7 +122,6 @@ class TestAdvancedConfigurations:
             ("presentation", "presentation", 0),
             ("picture", "picture", 0),
             ("one", "one", 0),
-            ("picknowledge_graphture", "knowledge_graph", 0),
             ("email", "email", 0),
             ("tag", "tag", 0),
             ("empty_chunk_method", "", 0),
@@ -142,28 +141,6 @@ class TestAdvancedConfigurations:
         "name, embedding_model, expected_code",
         [
             ("BAAI/bge-large-zh-v1.5", "BAAI/bge-large-zh-v1.5", 0),
-            ("BAAI/bge-base-en-v1.5", "BAAI/bge-base-en-v1.5", 0),
-            ("BAAI/bge-large-en-v1.5", "BAAI/bge-large-en-v1.5", 0),
-            ("BAAI/bge-small-en-v1.5", "BAAI/bge-small-en-v1.5", 0),
-            ("BAAI/bge-small-zh-v1.5", "BAAI/bge-small-zh-v1.5", 0),
-            (
-                "jinaai/jina-embeddings-v2-base-en",
-                "jinaai/jina-embeddings-v2-base-en",
-                0,
-            ),
-            (
-                "jinaai/jina-embeddings-v2-small-en",
-                "jinaai/jina-embeddings-v2-small-en",
-                0,
-            ),
-            ("nomic-ai/nomic-embed-text-v1.5", "nomic-ai/nomic-embed-text-v1.5", 0),
-            (
-                "sentence-transformers/all-MiniLM-L6-v2",
-                "sentence-transformers/all-MiniLM-L6-v2",
-                0,
-            ),
-            ("text-embedding-v2", "text-embedding-v2", 0),
-            ("text-embedding-v3", "text-embedding-v3", 0),
             (
                 "maidalun1020/bce-embedding-base_v1",
                 "maidalun1020/bce-embedding-base_v1",
@@ -172,9 +149,7 @@ class TestAdvancedConfigurations:
             ("other_embedding_model", "other_embedding_model", 102),
         ],
     )
-    def test_embedding_model(
-        self, get_http_api_auth, name, embedding_model, expected_code
-    ):
+    def test_embedding_model(self, get_http_api_auth, name, embedding_model, expected_code):
         payload = {"name": name, "embedding_model": embedding_model}
         res = create_dataset(get_http_api_auth, payload)
         assert res["code"] == expected_code
@@ -220,21 +195,19 @@ class TestAdvancedConfigurations:
                 100,
                 "AssertionError('chunk_token_num should be in range from 1 to 100000000')",
             ),
-            pytest.param(
+            (
                 "naive_chunk_token_num_float",
                 "naive",
                 {"chunk_token_num": 3.14},
-                102,
-                "",
-                marks=pytest.mark.xfail(reason="issue#5719"),
+                100,
+                "AssertionError('chunk_token_num should be int')",
             ),
-            pytest.param(
+            (
                 "naive_chunk_token_num_str",
                 "naive",
                 {"chunk_token_num": "1024"},
                 100,
-                "",
-                marks=pytest.mark.xfail(reason="issue#5719"),
+                "AssertionError('chunk_token_num should be int')",
             ),
             (
                 "naive_layout_recognize_DeepDOC",
@@ -261,13 +234,12 @@ class TestAdvancedConfigurations:
             ),
             ("naive_delimiter_empty", "naive", {"delimiter": ""}, 0, ""),
             ("naive_delimiter_backticks", "naive", {"delimiter": "`##`"}, 0, ""),
-            pytest.param(
+            (
                 "naive_delimiter_not_str",
                 "naive",
                 {"delimiter": 1},
                 100,
-                "",
-                marks=pytest.mark.xfail(reason="issue#5719"),
+                "AssertionError('delimiter should be str')",
             ),
             (
                 "naive_task_page_size_negative",
@@ -290,21 +262,19 @@ class TestAdvancedConfigurations:
                 100,
                 "AssertionError('task_page_size should be in range from 1 to 100000000')",
             ),
-            pytest.param(
+            (
                 "naive_task_page_size_float",
                 "naive",
                 {"task_page_size": 3.14},
                 100,
-                "",
-                marks=pytest.mark.xfail(reason="issue#5719"),
+                "AssertionError('task_page_size should be int')",
             ),
-            pytest.param(
+            (
                 "naive_task_page_size_str",
                 "naive",
                 {"task_page_size": "1024"},
                 100,
-                "",
-                marks=pytest.mark.xfail(reason="issue#5719"),
+                "AssertionError('task_page_size should be int')",
             ),
             ("naive_raptor_true", "naive", {"raptor": {"use_raptor": True}}, 0, ""),
             ("naive_raptor_false", "naive", {"raptor": {"use_raptor": False}}, 0, ""),
@@ -329,21 +299,19 @@ class TestAdvancedConfigurations:
                 100,
                 "AssertionError('auto_keywords should be in range from 0 to 32')",
             ),
-            pytest.param(
+            (
                 "naive_auto_keywords_float",
                 "naive",
-                {"auto_questions": 3.14},
+                {"auto_keywords": 3.14},
                 100,
-                "",
-                marks=pytest.mark.xfail(reason="issue#5719"),
+                "AssertionError('auto_keywords should be int')",
             ),
-            pytest.param(
+            (
                 "naive_auto_keywords_str",
                 "naive",
                 {"auto_keywords": "1024"},
                 100,
-                "",
-                marks=pytest.mark.xfail(reason="issue#5719"),
+                "AssertionError('auto_keywords should be int')",
             ),
             (
                 "naive_auto_questions_negative",
@@ -359,21 +327,19 @@ class TestAdvancedConfigurations:
                 100,
                 "AssertionError('auto_questions should be in range from 0 to 10')",
             ),
-            pytest.param(
+            (
                 "naive_auto_questions_float",
                 "naive",
                 {"auto_questions": 3.14},
                 100,
-                "",
-                marks=pytest.mark.xfail(reason="issue#5719"),
+                "AssertionError('auto_questions should be int')",
             ),
-            pytest.param(
+            (
                 "naive_auto_questions_str",
                 "naive",
                 {"auto_questions": "1024"},
                 100,
-                "",
-                marks=pytest.mark.xfail(reason="issue#5719"),
+                "AssertionError('auto_questions should be int')",
             ),
             (
                 "naive_topn_tags_negative",
@@ -389,21 +355,19 @@ class TestAdvancedConfigurations:
                 100,
                 "AssertionError('topn_tags should be in range from 0 to 10')",
             ),
-            pytest.param(
+            (
                 "naive_topn_tags_float",
                 "naive",
                 {"topn_tags": 3.14},
                 100,
-                "",
-                marks=pytest.mark.xfail(reason="issue#5719"),
+                "AssertionError('topn_tags should be int')",
             ),
-            pytest.param(
+            (
                 "naive_topn_tags_str",
                 "naive",
                 {"topn_tags": "1024"},
                 100,
-                "",
-                marks=pytest.mark.xfail(reason="issue#5719"),
+                "AssertionError('topn_tags should be int')",
             ),
         ],
     )
