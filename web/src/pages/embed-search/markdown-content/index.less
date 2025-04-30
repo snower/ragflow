@@ -10,6 +10,13 @@
     padding-left: 10px;
     border-left: 4px solid #ccc;
   }
+  :global(code) {
+    display: inline-block; /* 或 block */
+    white-space: pre-wrap; /* 保留空格但允许换行 */
+    word-break: break-all; /* 长单词或代码强制断开 */
+    overflow-wrap: break-word; /* 更优雅的断开方式 */
+    width: 100%; /* 确保占满容器 */
+  }
 }
 
 .referencePopoverWrapper {
